@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using UnityEngine;
 
 public class Target : MonoBehaviour
@@ -10,6 +11,9 @@ public class Target : MonoBehaviour
     private float maxTorque = 10;
     private float xRange = 4;
     private float ySpawnPos = -6;
+    private GameManager GameManager;
+    public int Pointvalue;
+    public ParticleSystem EDP445;
     void Start()
     {
         targetRb = GetComponent<Rigidbody>();
@@ -18,6 +22,8 @@ public class Target : MonoBehaviour
         targetRb.AddTorque(randomTorque(), randomTorque(), randomTorque(), ForceMode.Impulse);
 
         transform.position = RandomSpawnPos();
+        GameManager = GameObject.Find("GameManager")
+            .GetComponent<GameManager>();
     }
 
     // Update is called once per frame
@@ -41,10 +47,16 @@ public class Target : MonoBehaviour
     }
     private void OnMouseDown()
     {
-        Destroy(gameObject);
+        if (GameManager.isGameActive)
+        {
+            Destroy(gameObject);
+            GameManager.UpdateScore(Pointvalue);
+            Instantiate(EDP445, transform.position, EDP445.transform.rotation);
+        }
     }
     private void OnTriggerEnter(Collider other)
     {
         Destroy(gameObject);
+        if (!gameObject.CompareTag("Bad")) { GameManager.GameOver(); }
     }
 }
